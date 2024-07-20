@@ -1,6 +1,15 @@
 import Navbar from "@/components/Navbar";
 import SideBar from "@/components/SideBar";
+import { Metadata } from "next";
 import React, { ReactNode } from "react";
+
+export const metadata: Metadata = {
+  title: "LensI",
+  description: "Video conferance app",
+  icons: {
+    icon: "/icons/logo.svg",
+  },
+};
 
 const HomeLayout = ({ children }: { children: ReactNode }) => {
   return (
