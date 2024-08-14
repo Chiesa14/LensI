@@ -69,6 +69,8 @@ const MeetingTypeList = () => {
       title: "Meeting Created.",
     });
   };
+
+  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`;
   return (
     <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 justifu-b">
       <HomeCard
@@ -147,10 +149,10 @@ const MeetingTypeList = () => {
           title="Start an Instant Meeting"
           className="text-center"
           handleClick={() => {
-            // navigator.clipboard.writeText(meetingLink);
-            // toast({
-            //   title: "Link Copied",
-            // });
+            navigator.clipboard.writeText(meetingLink);
+            toast({
+              title: "Link Copied",
+            });
           }}
           image="/icons/checked.svg"
           buttonIcon="/icons/copy.svg"
