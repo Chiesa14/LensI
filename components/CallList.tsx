@@ -5,9 +5,10 @@
 import { useGetCalls } from "@/hooks/useGetCalls";
 import { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MeetingCard from "./MeetingCard";
 import Loader from "./Loader";
+import { useToast } from "./ui/use-toast";
 
 const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   const { endedCalls, upcomingCalls, callRecordings, isLoading } =
@@ -16,6 +17,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   const [recordings, setRecordings] = useState<CallRecording[]>([]);
 
   const router = useRouter();
+  const { toast } = useToast();
 
   const getCalls = () => {
     switch (type) {
@@ -44,6 +46,27 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
         return "";
     }
   };
+
+  useEffect(() => {
+    const fetchRecordings = async () => {
+      try {
+        const callData = await Promise.all(
+          callRecordings.map((meeting) => meeting.queryRecordings())
+        );
+
+        const recordings = callData
+          .filter((call) => call.recordings.length > 0)
+          .flatMap((call) => call.recordings);
+
+        setRecordings(recordings);
+      } catch (error) {
+        toast({ title: "Try again later" });
+      }
+    };
+
+    if (type === "recordings") fetchRecordings();
+  }, [type, callRecordings, toast]);
+
   const calls = getCalls();
   const noCallsMessage = getNoCallsMessages();
   console.log(calls, noCallsMessage);
@@ -57,13 +80,14 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
           <MeetingCard
             key={(meeting as Call).id}
             title={
-              (meeting as Call).state.custom.desciption?.substring(0, 26) ||
-              (meeting as Call).state.custom.description.substring(0, 26) ||
+              (meeting as Call).state?.custom.desciption?.substring(0, 26) ||
+              (meeting as Call).state?.custom.description.substring(0, 26) ||
+              meeting.filename?.substring(0, 20) ||
               "No description"
             }
             date={
-              meeting.state.startsAt.toLocaleString() ||
-              meeting.starts_at.toLocaleString()
+              meeting.state?.startsAt.toLocaleString() ||
+              meeting.start_time.toLocaleString()
             }
             icon={
               type === "ended"
@@ -73,9 +97,7 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
                 : "/icons/recordings.svg"
             }
             isPreviousMeeting={type === "ended"}
-            buttonIcon1={
-              type === "recordings" ? "/icons/recordings.svg" : undefined
-            }
+            buttonIcon1={type === "recordings" ? "/icons/play.svg" : undefined}
             buttonText={type === "recordings" ? "Play" : "Start"}
             handleClick={
               type === "recordings"
