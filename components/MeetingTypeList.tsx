@@ -43,13 +43,13 @@ const MeetingTypeList = () => {
       const startsAt =
         values.dateTime.toISOString() || new Date(Date.now()).toISOString();
 
-      const desciption = values.description || "Instant meeting";
+      const description = values.description || "Instant meeting";
 
       await call.getOrCreate({
         data: {
           starts_at: startsAt,
           custom: {
-            desciption,
+            description,
           },
         },
       });
