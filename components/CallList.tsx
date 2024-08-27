@@ -80,8 +80,8 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
           <MeetingCard
             key={(meeting as Call).id}
             title={
-              (meeting as Call).state?.custom.desciption?.substring(0, 26) ||
-              (meeting as Call).state?.custom.description.substring(0, 26) ||
+              (meeting as Call).state?.custom?.desciption?.substring(0, 26) ||
+              (meeting as Call).state?.custom?.description?.substring(0, 26) ||
               meeting.filename?.substring(0, 20) ||
               "No description"
             }
